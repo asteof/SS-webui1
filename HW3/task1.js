@@ -1,6 +1,6 @@
 const parseString = (string) => {
     const array = string.split(' ');
-    const regEx = /\d/;
+    const regEx = /[1-9]/;
     const resultString = array
         .sort(((a, b) => a.match(regEx) - b.match(regEx)))
         .join(' ');

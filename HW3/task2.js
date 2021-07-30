@@ -14,11 +14,15 @@ const createBoard = () => {
 }
 */
 
-const checkEqualReducer = (a, b) => a === b ? a : 0;
-const sumReducer = (a, b) => a + b;
+// const checkEqualReducer = (a, b) => a === b ? a : 0;
+const multiplyReducer = (a, b) => a * b;
 
 const checkRows = (array) => {
-    return array.map(subArr => subArr.reduce(checkEqualReducer));
+    const result = array.map(subArr => subArr.reduce(multiplyReducer));
+    console.log(result)
+    if (result.includes(1)) return 1;
+    else if (result.includes(8)) return 8;
+    else return 0;
 }
 
 const checkColumns = (array) => {
@@ -26,20 +30,17 @@ const checkColumns = (array) => {
     return checkRows(transposeBoard);
 }
 
-const checkLeftDiag = (array) => {
-    return array.map((el, i) => el[i]).reduce(checkEqualReducer);
-}
-
-const checkRightDiag = (array) => {
+const checkDiagonals = (array) => {
+    const main = array.map((el, i) => el[i]).reduce(multiplyReducer);
     const lastElem = array.length - 1;
-    return array.map((el, i) => el[lastElem - i]).reduce(checkEqualReducer);
+    const sub = array.map((el, i) => el[lastElem - i]).reduce(multiplyReducer);
+    return [testResult(main), testResult(sub)];
 }
 
-const countWins = (array) => {
-    let xWins = 0;
-    let oWins = 0;
-    array.forEach(el => el === 1 ? xWins += 1 : el === 2 ? oWins += 1 : 0);
-    return {xWins, oWins}
+const testResult = (result) => {
+    if (result === 1) return result;
+    else if (result === 8) return result;
+    else return 0;
 }
 
 const ticTacToe = (board) => {
@@ -47,25 +48,19 @@ const ticTacToe = (board) => {
     const checks = [
         checkRows(board),
         checkColumns(board),
-        [checkLeftDiag(board)],
-        [checkRightDiag(board)]
+        ...checkDiagonals(board),
     ]
     console.log(checks)
 
-    const isGameFinished = !board.some(el => el.includes(0));
+    const isGameFinished = (checks.includes(1) || checks.includes(8))
     console.log(isGameFinished)
-    const wins = checks.map(el => countWins(el))
-    console.table(wins)
-
-    const finalX = wins.map(el => el.xWins).reduce(sumReducer, 0);
-    const finalO = wins.map(el => el.oWins).reduce(sumReducer, 0);
 
     let result = 0;
-    if (isGameFinished && (finalX !== 0 || finalO !== 0)) {
-        result = finalX > finalO ? 1 : 2;
-    } else if (isGameFinished && finalX === 0 && finalO === 0) {
-        result = 0
-    } else if(!isGameFinished){
+    if (isGameFinished && checks.includes(1)) {
+        result = 1;
+    } else if (isGameFinished && checks.includes(8)) {
+        result = 2
+    } else if (!isGameFinished) {
         result = -1
     }
     console.log(result)
