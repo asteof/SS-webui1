@@ -3,8 +3,12 @@ const ipToNumber = (ipStr) => {
         throw new TypeError(`${ ipStr } is not a string`);
     }
 
-    const ip = ipStr.split('.').map(el => parseInt(el));
-    return (ip[0] * (256 ** 3)) + (ip[1] * (256 ** 2)) + (ip[2] * 256) + (ip[3]);
+    const ip = ipStr
+        .split('.')
+        .reduce((a, c, i, arr) => {
+            return a + ((256 ** (arr.length - (1 + i))) * parseInt(c))
+        }, 0);
+    return ip
 }
 
 const numberToIp = (num) => {

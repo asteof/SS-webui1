@@ -3,46 +3,43 @@ const quipuToNumber = (string) => {
         throw `${ string } is not a string`;
     }
 
-    const quipuArray = string.split('~');
-    const quipuLength = quipuArray.length;
-    const lastQuipu = quipuLength - 1;
-    if (quipuArray[lastQuipu] === '') {
-        quipuArray.splice(lastQuipu, 1);
+    const quipu = string.split('~');
+    const lastQuipuEl = quipu.length - 1;
+    if (quipu[lastQuipuEl] === '') {
+        quipu.splice(lastQuipuEl, 1);
     }
 
-    const numArray = quipuArray.map(el => el.length);
-    return parseInt(numArray.join(''));
+    const numbers = quipu.map(el => el.length);
+    return parseInt(numbers.join(''));
 }
 
-const numberToQuipu = (num) => {
-    const numArray = [...num.toString()];
-    const quipuArray = numArray.map(el => {
-        let res = '';
-        for (let i = 0; i < parseInt(el); i += 1) {
-            res += '@';
-        }
-        return res;
-    })
-    return quipuArray.join('~')
+const numberToQuipu = (nums) => {
+    const Q = '@';
+    const quipu = nums.reduce((qui, el) => {
+        const parsedEl = parseInt(el);
+        const value = parsedEl === 0 ? '~' : Q.repeat(parsedEl);
+        return `${ qui }~${ value }`;
+    }, '');
+    return quipu.slice(1);
 }
 
 const quipuCalculator = (string) => {
-    const regEx = /[*+\/-]/
-    const operator = regEx.exec(string)[0]
-    const quipuArray = string.split(regEx);
-    const leftOperand = quipuToNumber(quipuArray[0]);
-    const rightOperand = quipuToNumber(quipuArray[1]);
+    const calcRegEx = /[*+\/-]/;
+    const operator = calcRegEx.exec(string)[0];
+    const quipu = string.split(calcRegEx);
+    const leftOperand = quipuToNumber(quipu[0]);
+    const rightOperand = quipuToNumber(quipu[1]);
 
     const calc = {
         '+': (a, b) => a + b,
         '-': (a, b) => a - b,
         '*': (a, b) => a * b,
-        '/': (a, b) => ~~(a / b),
+        '/': (a, b) => Math.trunc(a / b),
     };
     const decimal = calc[operator](leftOperand, rightOperand);
+    const numbers = decimal.toString().match(/\d/g);
     console.log(`${ leftOperand } ${ operator } ${ rightOperand } = ${ decimal }`);
-    const result = numberToQuipu(decimal);
-    console.log(result);
+    return numberToQuipu(numbers)
 }
 
 // 123, 20, 101, 1001, 1000100
@@ -53,16 +50,16 @@ quipuToNumber('@~~~@');
 quipuToNumber('@~~~~@');
 quipuToNumber('@~~~~@~~~');
 //@@, @@~@@~@@~@@, @@@@@@@@@~@@@@@
-numberToQuipu(2);
-numberToQuipu(2222);
-numberToQuipu(95);
+// numberToQuipu(2);
+// numberToQuipu(2222);
+// numberToQuipu(95);
 
-quipuCalculator('@~@@+@@')
-quipuCalculator('@~@@-@@')
-quipuCalculator('@~@@*@@')
-quipuCalculator('@~@@/@@')
-quipuCalculator('@~@@+@@~~')
-quipuCalculator('@~~~~@~~~/@~@@@@@@@@~@@@@~@@')
+console.log(quipuCalculator('@~@@+@@'))
+console.log(quipuCalculator('@~@@-@@'));
+console.log(quipuCalculator('@~@@*@@'));
+console.log(quipuCalculator('@~@@/@@'));
+console.log(quipuCalculator('@~@@+@@~~'));
+console.log(quipuCalculator('@~~~~@~~~/@~@@@@@@@@~@@@@~@@'));
 
 /**
  * ###Вопросы
@@ -73,7 +70,4 @@ quipuCalculator('@~~~~@~~~/@~@@@@@@@@~@@@@~@@')
  const operator = regEx.exec(string)[0]
  *
  *  eval()
- *
- *
- *
  * */
